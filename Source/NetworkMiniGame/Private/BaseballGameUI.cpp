@@ -10,7 +10,7 @@ void UBaseballGameUI::SetIsMyTurn(bool bNewTurn)
 
 
 //testestestestsetstsetstestsetsetetstesteetesetestetestetest
-
+//test one more 
 ESlateVisibility UBaseballGameUI::GetInputVisibility() const
 {
 	return bIsMyTurnUI ? ESlateVisibility::Hidden : ESlateVisibility::Visible;
