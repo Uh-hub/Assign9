@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "BaseBallPlayerController.h"
 #include "BaseballGModeBase.generated.h"
 
-//°ÔÀÓÀÇ ½ÃÀÛ, Á¾·á ·ÎÁ÷ + ÇÃ·¹ÀÌ¾î ¼ø¼­ °ü¸® + Á¤´ä ÆÇÁ¤ ¹× °á°ú Àü´Ş
+//ê²Œì„ì˜ ì‹œì‘, ì¢…ë£Œ ë¡œì§ + í”Œë ˆì´ì–´ ìˆœì„œ ê´€ë¦¬ + ì •ë‹µ íŒì • ë° ê²°ê³¼ ì „ë‹¬
 UCLASS()
 class NETWORKMINIGAME_API ABaseballGModeBase : public AGameModeBase
 {
@@ -14,34 +14,34 @@ class NETWORKMINIGAME_API ABaseballGModeBase : public AGameModeBase
 public:
 
 
-	//TArray¿¡ ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ·¯µé ÀúÀå
+	//TArrayì— í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ëŸ¬ë“¤ ì €ì¥
 	UPROPERTY()
 	TArray<ABaseBallPlayerController*> PlayerControllers;
 
 	ABaseBallPlayerController* CurrentPC;
 
 
-	//ÇöÀç ÅÏÀÎ ÇÃ·¹ÀÌ¾îÀÇ ÀÎµ¦½º
+	//í˜„ì¬ í„´ì¸ í”Œë ˆì´ì–´ì˜ ì¸ë±ìŠ¤
 
 	UPROPERTY(Replicated)
 	int32 CurrentPlayerIndex = 0;
 	const int32 MaxTries = 3;
 
-	//ÇÃ·¹ÀÌ¾îº° ½Ãµµ È½¼ö
+	//í”Œë ˆì´ì–´ë³„ ì‹œë„ íšŸìˆ˜
 
 	UPROPERTY(Replicated)
 	FString answer;
 	UPROPERTY(Replicated)
 	int32 count = 1;
 	
-	//°ÔÀÓ Á¾·á¿©ºÎ ³ªÅ¸³»´Â º¯¼ö
+	//ê²Œì„ ì¢…ë£Œì—¬ë¶€ ë‚˜íƒ€ë‚´ëŠ” ë³€ìˆ˜
 	UPROPERTY(Replicated)
 	bool bIsGameOver;
 
 	//Post Login
 	virtual void PostLogin(APlayerController* NewPlayer);
 
-	//ÀÎµ¦½º °ü·Ã ÇÔ¼ö
+	//ì¸ë±ìŠ¤ ê´€ë ¨ í•¨ìˆ˜
 	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentPlayerIndex() const;
 
@@ -51,7 +51,7 @@ public:
 
 	int32 GetPlayerIndex(ABaseBallPlayerController* PC) const;
 	
-	//°ÔÀÓ ÁøÇà °ü·Ã ÇÔ¼ö
+	//ê²Œì„ ì§„í–‰ ê´€ë ¨ í•¨ìˆ˜
 	virtual void BeginPlay() override;
 	void StartTurn();
 	void NextTurn();
@@ -60,7 +60,7 @@ public:
 	void EndGame();
 	void HandleGameEnd(APlayerController* Winner);
 
-	//Á¤´ä ¹× ÆÇÁ¤ °ü·Ã ÇÔ¼ö
+	//ì •ë‹µ ë° íŒì • ê´€ë ¨ í•¨ìˆ˜
 	FString GenerateRandomNumber();
 	FString CalculateResult(const FString& Choice);
 

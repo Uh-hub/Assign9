@@ -38,13 +38,13 @@ void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 void ABaseballGModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	//¼­¹ö¿¡¼­¸¸ ½ÇÇà
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (!HasAuthority()) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay() ½ÇÇàµÊ"));
+	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay() ï¿½ï¿½ï¿½ï¿½ï¿½"));
 
 	answer = GenerateRandomNumber();
-	UE_LOG(LogTemp, Warning, TEXT("Á¤´ä : %s"), *answer);
+	UE_LOG(LogTemp, Warning, TEXT("ï¿½ï¿½ï¿½ï¿½ : %s"), *answer);
 
 	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay!"));
 
@@ -98,14 +98,13 @@ int32 ABaseballGModeBase::GetCurrentPlayerIndex() const
 
 void ABaseballGModeBase::CheckChoice(const FString& choice)
 {
-	//GameModeBase¿¡¼­ Á¤´ä ¿©ºÎ È®ÀÎ
+	
 	FString result = CalculateResult(choice);
 
-	//Á¤´ä ¿©ºÎ È®ÀÎ °á°ú GameStateBase·Î Àü´Þ
+
 	ABaseballGStateBase* GS = GetGameState<ABaseballGStateBase>();
 	if (GS)
 	{
-		//°á°ú¸¦ multicast 
 		//GS->MulticastShowResult(choice, result);
 		if (CurrentPC)
 		{
@@ -161,7 +160,6 @@ void ABaseballGModeBase::Multicast_UpdateTurnUI_Implementation()
 
 FString ABaseballGModeBase::GenerateRandomNumber()
 {
-	//3ÀÚ¸® ¼ýÀÚ ·£´ý »ý¼º
 	FString result;
 	while (result.Len() < 3)
 	{
@@ -178,16 +176,17 @@ FString ABaseballGModeBase::GenerateRandomNumber()
 
 FString ABaseballGModeBase::CalculateResult(const FString& choice)
 {
-	//À¯È¿ÇÏÁö ¾ÊÀº °ª(Áßº¹, 3ÀÚ¸® ÃÊ°ú ¶Ç´Â ¹Ì¸¸ = OUT)
-	//À¯È¿ÇÑ °ªÀÌ¶ó¸é
-	  //S : ÀÚ¸®O, °ªO
-	  //B : ÀÚ¸®X, °ªO
-	  //OUT : ÀÚ¸®X, °ªX
-	  //°á°ú : 1S2B
 	if (choice.Len() != 3)
 	{
-		return FString::Printf(TEXT("GMB_CalculateResult : 0S 0B 3OUT"));;
+		return FString::Printf(TEXT("GMB_CalculateResult : 0S 0B 3OUT (Over 3 letters)"));
 	}
+
+	if(!choice.IsNumeric())
+	{
+		return FString::Printf(TEXT("GMB_CalculateResult : 0S 0B 3OUT(Not a Number)"));
+	}
+	
+
 	int32 strike = 0, ball = 0, out = 0;
 	for (int32 i = 0; i < choice.Len(); i++)
 	{

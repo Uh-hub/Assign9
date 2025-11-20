@@ -1,4 +1,4 @@
-#include "BaseBallPlayerController.h"
+Ôªø#include "BaseBallPlayerController.h"
 #include "BaseballGModeBase.h"
 #include "Net/UnrealNetwork.h"
 #include "BaseballGameUI.h"
@@ -69,12 +69,12 @@ void ABaseBallPlayerController::SubmitChoice(FString choice)
 {
 	if (HasAuthority())
 	{
-		//º≠πˆ
+		//ÏÑúÎ≤Ñ
 		ServerSubmitChoice(choice);
 	}
 	else
 	{
-		//≈¨∂Û¿Ãæ∆Æ
+		//ÌÅ¥ÎùºÏù¥Ïñ∏Ìä∏
 		ServerSubmitChoice(choice);
 	}
 	
@@ -83,7 +83,7 @@ void ABaseBallPlayerController::SubmitChoice(FString choice)
 
 void ABaseBallPlayerController::ServerSubmitChoice_Implementation(const FString& choice)
 {
-	//GetAuthGameMode∞° ππæﬂ???
+	//GetAuthGameModeÍ∞Ä Î≠êÏïº???
 	ABaseballGModeBase* GM = Cast<ABaseballGModeBase>(GetWorld()->GetAuthGameMode());
 	if (GM)
 	{
