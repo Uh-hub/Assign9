@@ -12,7 +12,8 @@ class NETWORKMINIGAME_API ABaseballGModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
-
+	UPROPERTY()
+	UBaseballGameUI* BaseballGameUI;
 
 	//TArray에 플레이어 컨트롤러들 저장
 	UPROPERTY()
@@ -25,15 +26,17 @@ public:
 
 	UPROPERTY(Replicated)
 	int32 CurrentPlayerIndex = 0;
-	const int32 MaxTries = 3;
+
 
 	//플레이어별 시도 횟수
 
 	UPROPERTY(Replicated)
 	FString answer;
-	UPROPERTY(Replicated)
-	int32 count = 1;
-	
+
+
+
+
+
 	//게임 종료여부 나타내는 변수
 	UPROPERTY(Replicated)
 	bool bIsGameOver;
@@ -44,10 +47,6 @@ public:
 	//인덱스 관련 함수
 	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentPlayerIndex() const;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_UpdateTurnUI();
-
 
 	int32 GetPlayerIndex(ABaseBallPlayerController* PC) const;
 	

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "BaseballGameUI.generated.h"
 
 
@@ -14,10 +15,18 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Baseball UI")
 	bool bIsMyTurnUI = false;
 
-	void SetIsMyTurn(bool bNewTurn);
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* RoundText = nullptr;
+	
+
+
+	void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
 	ESlateVisibility GetInputVisibility() const;
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateRoundCount(int32 CurrentRound, int32 MaxRound);
 
+	void SetIsMyTurn(bool bNewTurn);
 };

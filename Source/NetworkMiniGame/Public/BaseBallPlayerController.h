@@ -37,8 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SubmitChoice(FString choice);
 
-	void UpdateUI();
-	void CreateBaseballGameUI();
+	void UpdateUI(int32 CurrentRound, int32 MaxRound);
+	//void CreateBaseballGameUI();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

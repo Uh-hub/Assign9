@@ -20,22 +20,26 @@ void ABaseBallPlayerController::BeginPlay()
 
 	if (IsLocalPlayerController())
 	{
-		UUserWidget* GameUIWidget = CreateWidget<UUserWidget>(this, GameUIClass);
-		if (GameUIWidget)
+		if (GameUIClass)
 		{
-			GameUIWidget->AddToViewport();
-
-			BaseballGameUI = Cast<UBaseballGameUI>(GameUIWidget);
-
-			if (BaseballGameUI)
+			UBaseballGameUI* GameUIWidget = CreateWidget<UBaseballGameUI>(this, GameUIClass);
+			if (GameUIWidget)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BaseballGameUI successfully created and stored"));
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("BaseballGameUI cast failed!"));
+				GameUIWidget->AddToViewport();
+
+				BaseballGameUI = GameUIWidget;
+
+				if (BaseballGameUI)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("BaseballGameUI successfully created and stored"));
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("BaseballGameUI cast failed!"));
+				}
 			}
 		}
+
 	}
 }
 
@@ -96,13 +100,15 @@ void ABaseBallPlayerController::ServerSubmitChoice_Implementation(const FString&
 }
 
 
-void ABaseBallPlayerController::UpdateUI()
+void ABaseBallPlayerController::UpdateUI(int32 CurrentRound, int32 MaxRound)
 {
 
 	if (BaseballGameUI)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseballGameUI in controller working!"));
+		BaseballGameUI->UpdateRoundCount(CurrentRound, MaxRound);
 		BaseballGameUI->SetIsMyTurn(bIsMyTurn);
+
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("called but BaseballGameUI in controller not working!"));

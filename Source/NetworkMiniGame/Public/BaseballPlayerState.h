@@ -19,6 +19,9 @@ public:
 
 	void SetGameResult(const FString& Result);
 
+
+
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

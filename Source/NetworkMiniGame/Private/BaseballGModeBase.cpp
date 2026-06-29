@@ -2,6 +2,7 @@
 #include "BaseballGStateBase.h"
 #include "Net/UnrealNetwork.h"
 #include "BaseballPlayerState.h"
+#include "BaseballGameUI.h"
 
 void ABaseballGModeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -9,7 +10,6 @@ void ABaseballGModeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(ABaseballGModeBase, CurrentPlayerIndex);
 	DOREPLIFETIME(ABaseballGModeBase, answer);
-	DOREPLIFETIME(ABaseballGModeBase, count);
 	DOREPLIFETIME(ABaseballGModeBase, bIsGameOver);
 
 
@@ -38,15 +38,15 @@ void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 void ABaseballGModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	//���������� ����
 	if (!HasAuthority()) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay() �����"));
+	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay()"));
 
 	answer = GenerateRandomNumber();
-	UE_LOG(LogTemp, Warning, TEXT("���� : %s"), *answer);
+	UE_LOG(LogTemp, Warning, TEXT("Answer : %s"), *answer);
 
 	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay!"));
+
 
 	if (PlayerControllers.Num() > 0)
 	{
@@ -129,32 +129,25 @@ void ABaseballGModeBase::NextTurn()
 	if (CurrentPlayerIndex >= PlayerControllers.Num())
 	{
 		CurrentPlayerIndex = 0;
-		count++;
-		UE_LOG(LogTemp, Warning, TEXT("Current round : %d"), count);
-		if (GEngine)
+
+		if (ABaseballGStateBase* GState = GetGameState<ABaseballGStateBase>())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Current Round: %d"), count));
+			int32 NewCount = GState->GetRoundCnt() + 1;
+			GState->SetRoundCnt(NewCount);
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Current Round: %d"), NewCount));
+			}
+			if (NewCount > GState->MaxTries)
+			{
+				GameResult("END", "END");
+				return;
+			}
 		}
 	}
-	if (count > MaxTries)
-	{
-		GameResult("END", "END");
-		return;
-	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("NextTurn: CurrentPlayerIndex = %d, PlayerControllers.Num() = %d"), CurrentPlayerIndex, PlayerControllers.Num());
 	StartTurn();
-	Multicast_UpdateTurnUI();
-}
-
-
-void ABaseballGModeBase::Multicast_UpdateTurnUI_Implementation()
-{
-	if (ABaseBallPlayerController* BaseballPC = PlayerControllers[CurrentPlayerIndex])
-	{
-		UE_LOG(LogTemp, Warning, TEXT("IsMyTurn Called from GameMode!"));
-		BaseballPC->UpdateUI();
-
-	}
 }
 
 
