@@ -14,7 +14,9 @@ public class NetworkMiniGame : ModuleRules
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput", 
-			"UMG"
+			"UMG",
+			"OnlineSubsystem",
+			"OnlineSubsystemNull"
 		});
 	}
 }
