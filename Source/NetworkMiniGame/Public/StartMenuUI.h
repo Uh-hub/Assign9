@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 #include "StartMenuUI.generated.h"
 
 class UButton;
@@ -36,4 +37,25 @@ private:
 	//Join 버튼 누를 시,
 	UFUNCTION()
 	void OnJoinBClicked();
+	
+	//방 찾는 용 델리게이트와 함수
+	void OnFindSessionsComplete(bool bWasSuccessful);
+	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+	FDelegateHandle FindSessionsCompleteDelegatehandle; 
+
+	//방 검색 조건을 담을 스마트 포인터 변수
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	//방 접속 델리게이트와 함수
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
+	FDelegateHandle JoinSessionCompleteDelegateHandle;
+
+
+
+
+
+
+
+
 };
