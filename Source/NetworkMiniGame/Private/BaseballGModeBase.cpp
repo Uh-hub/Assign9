@@ -1,4 +1,4 @@
-#include "BaseballGModeBase.h"
+﻿#include "BaseballGModeBase.h"
 #include "BaseballGStateBase.h"
 #include "Net/UnrealNetwork.h"
 #include "BaseballPlayerState.h"
@@ -15,11 +15,25 @@ void ABaseballGModeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 }
 
+void ABaseballGModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!HasAuthority()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay() - Waiting for players..."));
+}
+
+
 void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+	
 
 	ABaseBallPlayerController* PC = Cast<ABaseBallPlayerController>(NewPlayer);
+
+	//로그로 누가 들어왔는지 확인
+	//GetNumPlayers() : 현재 서버에 정상적으로 로그인한 플레이어 컨트롤러의 총개수를 반환함
+	
 	if (PC)
 	{
 		PlayerControllers.Add(PC);
@@ -27,38 +41,19 @@ void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(LogTemp, Warning, TEXT("Player %d joined! Total Players: %d"), PC->PlayerIndex, PlayerControllers.Num());
 		if (PlayerControllers.Num() == 2)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("[GM_PL] 2명 접속 완료! 정답을 생성하고 게임을 시작합니다. "));
+
+			answer = GenerateRandomNumber();
+			UE_LOG(LogTemp, Warning, TEXT("Answer : %s"), *answer);
+
+			CurrentPlayerIndex = 0;
+			//안전하게 다음 틱에 StartTurn 실행되도록 함
 			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ABaseballGModeBase::StartTurn);
 		}
 	}
 	
 }
 
-
-
-void ABaseballGModeBase::BeginPlay()
-{
-	Super::BeginPlay();
-	if (!HasAuthority()) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay()"));
-
-	answer = GenerateRandomNumber();
-	UE_LOG(LogTemp, Warning, TEXT("Answer : %s"), *answer);
-
-	UE_LOG(LogTemp, Warning, TEXT("GameMode BeginPlay!"));
-
-
-	if (PlayerControllers.Num() > 0)
-	{
-		StartTurn();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("No PlayerControllers available in BeginPlay!"));
-	}
-	
-	
-}
 
 void ABaseballGModeBase::StartTurn()
 {

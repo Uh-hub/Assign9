@@ -42,7 +42,7 @@ public:
 	bool bIsGameOver;
 
 	//Post Login
-	virtual void PostLogin(APlayerController* NewPlayer);
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	//인덱스 관련 함수
 	UFUNCTION(BlueprintCallable)

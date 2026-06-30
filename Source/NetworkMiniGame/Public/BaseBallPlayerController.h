@@ -13,6 +13,10 @@ class NETWORKMINIGAME_API ABaseBallPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+	TSubclassOf<UUserWidget> StartMenuClass;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI")
 	TSubclassOf<UUserWidget> GameUIClass;
 	UPROPERTY(Replicated)

@@ -20,26 +20,20 @@ void ABaseBallPlayerController::BeginPlay()
 
 	if (IsLocalPlayerController())
 	{
-		if (GameUIClass)
+		if (StartMenuClass)
 		{
-			UBaseballGameUI* GameUIWidget = CreateWidget<UBaseballGameUI>(this, GameUIClass);
-			if (GameUIWidget)
+			UUserWidget* StartMenuWidget = CreateWidget<UUserWidget>(this, StartMenuClass);
+			if (StartMenuWidget)
 			{
-				GameUIWidget->AddToViewport();
+				StartMenuWidget->AddToViewport();
 
-				BaseballGameUI = GameUIWidget;
-
-				if (BaseballGameUI)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("BaseballGameUI successfully created and stored"));
-				}
-				else
-				{
-					UE_LOG(LogTemp, Error, TEXT("BaseballGameUI cast failed!"));
-				}
+				bShowMouseCursor = true;
+				
+				FInputModeUIOnly InputMode;
+				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+				SetInputMode(InputMode);
 			}
 		}
-
 	}
 }
 

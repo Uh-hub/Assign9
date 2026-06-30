@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
@@ -12,11 +12,11 @@ class NETWORKMINIGAME_API ABaseballGStateBase : public AGameStateBase
 
 public:
 
-	//ÃÖ´ë ½Ãµµ °¡´É È½¼ö
+	//ìµœëŒ€ ì‹œë„ ê°€ëŠ¥ íšŸìˆ˜
 	UPROPERTY(Replicated)
 	int32 MaxTries = 3;
 
-	//°á°úÃ¢
+	//ê²°ê³¼ì°½
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastShowResult(const FString& choice, const FString& result);
 
@@ -24,10 +24,10 @@ public:
 	void ClientShowResult(const FString& choice, const FString& result);
 	
 	
-	//Getter : Å¬¶óÀÌ¾ğÆ®¿¡¼­ µ¥ÀÌÅÍ¸¦ ÀĞ¾î°¡±â À§ÇÔ
+	//Getter : í´ë¼ì´ì–¸íŠ¸ì—ì„œ ë°ì´í„°ë¥¼ ì½ì–´ê°€ê¸° ìœ„í•¨
 	UFUNCTION(BlueprintCallable)
 	int32 GetRoundCnt() const { return RoundCnt; }
-	//Setter : ¼­¹ö¿¡¼­ µ¥ÀÌÅÍ¸¦ º¯°æÇÏ±â À§ÇÔ
+	//Setter : ì„œë²„ì—ì„œ ë°ì´í„°ë¥¼ ë³€ê²½í•˜ê¸° ìœ„í•¨
 	void SetRoundCnt(int32 NewCnt);
 
 	UFUNCTION()
@@ -36,7 +36,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	//¶ó¿îµå È½¼ö : RoundCnt
+	//ë¼ìš´ë“œ íšŸìˆ˜ : RoundCnt
 	UPROPERTY(ReplicatedUsing = OnRep_RoundCnt)
 	int32 RoundCnt = 1;
 };
