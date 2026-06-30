@@ -8,6 +8,27 @@
 void UStartMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	//시작 화면 전에 남아있는 유령 세션 전부 삭제
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+	if (OnlineSub)
+	{
+		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+		if (Sessions.IsValid())
+		{
+			if (Sessions->GetNamedSession(FName("BaseballSession")) != nullptr)
+			{
+				//해당 세션이 존재한다면(nullptr이 아닌 경우) 파괴해라
+				Sessions->DestroySession(FName("BaseballSession"));
+				UE_LOG(LogTemp, Warning, TEXT("시작 화면 로드: 기존 유령 세션을 성공적으로 파괴했습니다."));
+			}
+		}
+
+	}
+
+
+
+	//각 버튼과 함수 연결
 	if (HostButton)
 	{
 		HostButton->OnClicked.AddDynamic(this, &UStartMenuUI::OnHostBClicked);

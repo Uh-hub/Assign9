@@ -20,20 +20,44 @@ void ABaseBallPlayerController::BeginPlay()
 
 	if (IsLocalPlayerController())
 	{
-		if (StartMenuClass)
+		FString CurrentMapName = GetWorld()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("현재 로드된 맵: %s"), *CurrentMapName);
+		
+		//로비 맵 (StartMenuMap -> StartMenuUI)
+		if (CurrentMapName.Contains(TEXT("StartMenuMap")))
 		{
-			UUserWidget* StartMenuWidget = CreateWidget<UUserWidget>(this, StartMenuClass);
-			if (StartMenuWidget)
+			if (StartMenuClass)
 			{
-				StartMenuWidget->AddToViewport();
+				UUserWidget* StartMenuWidget = CreateWidget<UUserWidget>(this, StartMenuClass);
+				if (StartMenuWidget)
+				{
+					StartMenuWidget->AddToViewport();
 
-				bShowMouseCursor = true;
-				
-				FInputModeUIOnly InputMode;
-				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-				SetInputMode(InputMode);
+					bShowMouseCursor = true;
+
+					FInputModeUIOnly InputMode;
+					InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+					SetInputMode(InputMode);
+				}
 			}
 		}
+		//게임 맵 (MainMap -> BaseballGameUI)
+		else if (CurrentMapName.Contains(TEXT("MainMap")))
+		{
+			if (GameUIClass)
+			{
+				UUserWidget* GameUIWidget = CreateWidget<UUserWidget>(this, GameUIClass);
+				if (GameUIWidget)
+				{
+					GameUIWidget->AddToViewport();
+
+					bShowMouseCursor = true;
+					FInputModeGameAndUI InputMode;
+					SetInputMode(InputMode);
+				}
+			}
+		}
+		
 	}
 }
 
