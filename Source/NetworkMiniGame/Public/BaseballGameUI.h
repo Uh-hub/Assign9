@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "BaseballGameUI.generated.h"
 
+class UBorder;
 
 UCLASS()
 class NETWORKMINIGAME_API UBaseballGameUI : public UUserWidget
@@ -22,11 +23,18 @@ public:
 
 	void NativeConstruct() override;
 
-	UFUNCTION(BlueprintCallable)
-	ESlateVisibility GetInputVisibility() const;
+	//UFUNCTION(BlueprintCallable)
+	//ESlateVisibility GetInputVisibility() const;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateRoundCount(int32 CurrentRound, int32 MaxRound);
 
 	void SetIsMyTurn(bool bNewTurn);
+
+protected:
+	
+	UPROPERTY(meta = (BindWidget))
+	UBorder* InputBlocker;
+
+
 };

@@ -38,11 +38,17 @@ void ABaseballGStateBase::MulticastShowResult_Implementation(const FString& choi
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Choice :%s, Result: %s"), *choice, *result));
+		if (result.Contains("WIN") || result.Contains("LOSE") || result.Contains("DRAW"))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("[GS공지] 게임 결과: %s"), *result));
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("[GS공지] 입력 :%s, 결과: %s"), *choice, *result));
+
+		}
+
+
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Choice: %s, Result: %s"), *choice, *result);
-
-
 }
 
 void ABaseballGStateBase::ClientShowResult_Implementation(const FString& choice, const FString& result)

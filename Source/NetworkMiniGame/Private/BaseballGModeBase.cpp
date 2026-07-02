@@ -38,17 +38,28 @@ void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 	{
 		PlayerControllers.Add(PC);
 		PC->PlayerIndex = PlayerControllers.Num()-1;
-		UE_LOG(LogTemp, Warning, TEXT("Player %d joined! Total Players: %d"), PC->PlayerIndex, PlayerControllers.Num());
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+				FString::Printf(TEXT("Player %d Joined! Total Players: %d"), PC->PlayerIndex, PlayerControllers.Num()));
+		}
+		
 		if (PlayerControllers.Num() == 2)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[GM_PL] 2명 접속 완료! 정답을 생성하고 게임을 시작합니다. "));
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+					FString::Printf(TEXT("[GM_PL] 2명 접속 완료! 정답을 생성하고 게임을 시작합니다. ")));
+			}
 
 			answer = GenerateRandomNumber();
 			UE_LOG(LogTemp, Warning, TEXT("Answer : %s"), *answer);
 
 			CurrentPlayerIndex = 0;
-			//안전하게 다음 틱에 StartTurn 실행되도록 함
-			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ABaseballGModeBase::StartTurn);
+			//안전하게 1초 후에 StartTurn 실행되도록 함
+			FTimerHandle StartDelayHandle; 
+			GetWorld()->GetTimerManager().SetTimer(StartDelayHandle, this, &ABaseballGModeBase::StartTurn, 1.0f, false);
 		}
 	}
 	
@@ -59,22 +70,40 @@ void ABaseballGModeBase::StartTurn()
 {
 	if (PlayerControllers.Num() == 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("No PlayerControllers available in StartTurn!"));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,
+				FString::Printf(TEXT("No PlayerControllers available in StartTurn! ")));
+		}
+		//UE_LOG(LogTemp, Error, TEXT("No PlayerControllers available in StartTurn!"));
 		return;
 	}
 	CurrentPC = PlayerControllers[CurrentPlayerIndex];
 	if (CurrentPC)
 	{
 		CurrentPC->SetIsMyTurn(true);
-		CurrentPC->OnRep_IsMyTurn();
-		UE_LOG(LogTemp, Warning, TEXT("Player %d's turn!"), CurrentPC->PlayerIndex);
+		if (CurrentPC->IsLocalController())
+		{
+			CurrentPC->OnRep_IsMyTurn();
+		}
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+				FString::Printf(TEXT("Player %d's turn!"), CurrentPC->PlayerIndex));
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("Player %d's turn!"), CurrentPC->PlayerIndex);
 	}
 	for (auto PC : PlayerControllers)
 	{
 		if (PC != CurrentPC)
 		{
 			PC->SetIsMyTurn(false);
-			PC->OnRep_IsMyTurn();
+			if (PC->IsLocalController())
+			{
+				PC->OnRep_IsMyTurn();
+			}
+			
 		}
 	}
 
@@ -100,11 +129,9 @@ void ABaseballGModeBase::CheckChoice(const FString& choice)
 	ABaseballGStateBase* GS = GetGameState<ABaseballGStateBase>();
 	if (GS)
 	{
-		//GS->MulticastShowResult(choice, result);
-		if (CurrentPC)
-		{
-			GS->ClientShowResult(choice, result);
-		}
+		//서버가 GameState에서 Multicast 진행
+		//호출 시 서버와 모든 클라이언트의 화면에 로그가 출력됨
+		GS->MulticastShowResult(choice, result);
 	}
 	if (result.Contains("3S 0B 0OUT"))
 	{
@@ -251,7 +278,7 @@ void ABaseballGModeBase::GameResult(const FString& choice, const FString& Result
 		{
 			if (PC->IsLocalPlayerController())
 			{
-				GS->ClientShowResult(choice, TEXT("DRAW"));
+				GS->MulticastShowResult(choice, TEXT("DRAW"));
 			}
 		}
 	}

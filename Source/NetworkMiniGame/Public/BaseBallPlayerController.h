@@ -23,8 +23,10 @@ public:
 	int32 PlayerIndex;
 	UPROPERTY(ReplicatedUsing = OnRep_IsMyTurn)
 	bool bIsMyTurn;
+
 	UFUNCTION()
-	void OnRep_IsMyTurn();
+	void OnRep_IsMyTurn(); //On_Rep 함수의 경우 무조건 UFUNCTION()이 붙어야 엔진이 인식함
+
 
 	void SetIsMyTurn(bool bNewTurn);
 

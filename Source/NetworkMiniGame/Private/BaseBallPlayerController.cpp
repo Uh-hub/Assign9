@@ -51,6 +51,15 @@ void ABaseBallPlayerController::BeginPlay()
 				{
 					GameUIWidget->AddToViewport();
 
+					BaseballGameUI = Cast<UBaseballGameUI>(GameUIWidget);
+					if (BaseballGameUI == nullptr)
+					{
+						if (GEngine)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+								FString::Printf(TEXT("UI 캐스팅 실패! BaseballGameUI가 Null 입니다.")));
+						}
+					}
 					bShowMouseCursor = true;
 					FInputModeGameAndUI InputMode;
 					SetInputMode(InputMode);
@@ -145,7 +154,12 @@ void ABaseBallPlayerController::SetIsMyTurn(bool bNewTurn)
 
 void ABaseBallPlayerController::OnRep_IsMyTurn()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnRep_IsMyTurn Called! New Value: %s"), bIsMyTurn ? TEXT("True") : TEXT("False"));
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+			FString::Printf(TEXT("OnRep_IsMyTurn Called! New Value: %s"), bIsMyTurn ? TEXT("True") : TEXT("False")));
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("OnRep_IsMyTurn Called! New Value: %s"), bIsMyTurn ? TEXT("True") : TEXT("False"));
 	if (BaseballGameUI)
 	{
 		BaseballGameUI->SetIsMyTurn(bIsMyTurn);

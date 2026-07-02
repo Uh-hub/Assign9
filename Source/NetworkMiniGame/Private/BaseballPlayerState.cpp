@@ -13,7 +13,11 @@ void ABaseballPlayerState::SetGameResult(const FString& Result)
 {
     if (GameResult != Result)
     {
-        GameResult = Result;
+        if (HasAuthority())
+        {
+            GameResult = Result;
+            OnRep_GameResult();
+        }
     }
 }
 
@@ -26,7 +30,7 @@ void ABaseballPlayerState::OnRep_GameResult()
         UE_LOG(LogTemp, Warning, TEXT("GameResult updated: %s"), *GameResult);
         if (GEngine)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Game Result: %s"), *GameResult));
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("[BPlyaterState]Game Result: %s"), *GameResult));
         }
     }
 }
