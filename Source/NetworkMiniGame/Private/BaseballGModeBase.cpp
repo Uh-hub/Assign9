@@ -2,7 +2,10 @@
 #include "BaseballGStateBase.h"
 #include "Net/UnrealNetwork.h"
 #include "BaseballPlayerState.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "BaseballGameUI.h"
+#include "Kismet/GameplayStatics.h"
 
 void ABaseballGModeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -64,6 +67,8 @@ void ABaseballGModeBase::PostLogin(APlayerController* NewPlayer)
 	}
 	
 }
+
+
 
 
 void ABaseballGModeBase::StartTurn()
@@ -240,6 +245,9 @@ void ABaseballGModeBase::HandleGameEnd(APlayerController* Winner)
 			}
 		}
 	}
+	FTimerHandle SessionDestroyDelayHandle;
+	GetWorld()->GetTimerManager().SetTimer(SessionDestroyDelayHandle, this, &ABaseballGModeBase::ReturnToLobby, 10.0f, false);
+
 }
 
 
@@ -294,3 +302,89 @@ void ABaseballGModeBase::EndGame()
 	}
 }
 
+//게임 비정상 종료 시,
+
+void ABaseballGModeBase::Logout(AController* ExitingPlayer)
+{
+	//ExitingPlayer : 중간에 탈주한 플레이어 
+	//RemainingPlayer : 게임에 남아있는 플레이어
+
+	Super::Logout(ExitingPlayer);
+
+	if (bIsGameOver) return;
+	ABaseBallPlayerController* ExitingPC = Cast<ABaseBallPlayerController>(ExitingPlayer);
+	if (ExitingPC && PlayerControllers.Contains(ExitingPC))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow,
+				FString::Printf(TEXT("[GM_Logout] 플레이어 탈주! 남은 플레이어를 승리 처리합니다. ")));
+		}
+		ABaseBallPlayerController* RemainingPlayer = nullptr;
+		for (ABaseBallPlayerController* PC : PlayerControllers)
+		{
+			if (PC != ExitingPC)
+			{
+				RemainingPlayer = PC;
+				break;
+			}
+		}
+		//남은 플레이어는 게임 종료 로직 실행
+		if (RemainingPlayer)
+		{
+			bIsGameOver = true;
+			HandleGameEnd(RemainingPlayer);
+		}
+		//탈주한 플레이어는 PlayerControllers 배열에서 제거
+		PlayerControllers.Remove(ExitingPC);
+
+	}
+}
+
+void ABaseballGModeBase::ReturnToLobby()
+{
+	//[게임 정상 종료] 접속한 클라이언트 우선 로비로 복귀
+	for (ABaseBallPlayerController* PC : PlayerControllers)
+	{
+		if (PC && !PC->IsLocalPlayerController())
+		{
+			PC->Client_LeaveGame();
+		}
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,
+			FString::Printf(TEXT("[GM_ReturnToLobby] 클라이언트 모두 로비 복귀 완료. ")));
+	}
+	//클라이언트가 모두 종료되었다면 서버도 1초 후 종료 로직 실행[수정]
+	FTimerHandle ServerShutdownTimer;
+	GetWorldTimerManager().SetTimer(ServerShutdownTimer, this, &ABaseballGModeBase::ShutdownServer, 2.0f, false);
+
+	
+}
+
+
+void ABaseballGModeBase::ShutdownServer()
+{
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,
+			FString::Printf(TEXT("[GM_ShutdownServer] shutdownServer 호출됨. ")));
+	}
+
+	//[서버]세션 파괴 후 로비 화면으로 복귀
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+	
+	if (OnlineSub)
+	{
+		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+		if (Sessions.IsValid())
+		{
+			Sessions->DestroySession(FName("BaseballSession"));
+		}
+	}
+
+	UGameplayStatics::OpenLevel(this, FName("StartMenuMap"));
+	//GetWorld()->ServerTravel(TEXT("/Game/MiniProject/Maps/StartMenuMap"));
+}

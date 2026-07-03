@@ -63,6 +63,12 @@ public:
 	FString GenerateRandomNumber();
 	FString CalculateResult(const FString& Choice);
 
+	//게임 종료 관련 함수
+	virtual void Logout(AController* ExitingPlayer) override;
+	void ReturnToLobby();
+	void ShutdownServer();
+
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

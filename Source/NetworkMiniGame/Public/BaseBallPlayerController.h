@@ -46,6 +46,11 @@ public:
 	void UpdateUI(int32 CurrentRound, int32 MaxRound);
 	//void CreateBaseballGameUI();
 
+	//클라이언트 퇴장
+	UFUNCTION(Client, Reliable)
+	void Client_LeaveGame();
+	
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

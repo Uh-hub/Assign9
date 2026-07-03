@@ -1,7 +1,10 @@
 ﻿#include "BaseBallPlayerController.h"
 #include "BaseballGModeBase.h"
 #include "Net/UnrealNetwork.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "BaseballGameUI.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void ABaseBallPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -140,6 +143,21 @@ void ABaseBallPlayerController::UpdateUI(int32 CurrentRound, int32 MaxRound)
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("called but BaseballGameUI in controller not working!"));
 	}
+}
+
+void ABaseBallPlayerController::Client_LeaveGame_Implementation()
+{
+	//[게임 정상 종료]클라이언트 우선 로비로 복귀
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+	if (OnlineSub)
+	{
+		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+		if (Sessions.IsValid())
+		{
+			Sessions->DestroySession(FName("BaseballSession"));
+		}
+	}
+	UGameplayStatics::OpenLevel(this, FName("StartMenuMap"));
 }
 
 
