@@ -245,9 +245,6 @@ void ABaseballGModeBase::HandleGameEnd(APlayerController* Winner)
 			}
 		}
 	}
-	FTimerHandle SessionDestroyDelayHandle;
-	GetWorld()->GetTimerManager().SetTimer(SessionDestroyDelayHandle, this, &ABaseballGModeBase::ReturnToLobby, 10.0f, false);
-
 }
 
 
@@ -300,6 +297,10 @@ void ABaseballGModeBase::EndGame()
 	{
 		PC->SetIsMyTurn(false);
 	}
+	FTimerHandle SessionDestroyDelayHandle;
+	GetWorld()->GetTimerManager().SetTimer(SessionDestroyDelayHandle, this, &ABaseballGModeBase::ReturnToLobby, 10.0f, false);
+
+
 }
 
 //게임 비정상 종료 시,
